@@ -8,6 +8,8 @@ module.exports = {
 
     send : async (req, res)=>{
         const newMSG = req.body.message;
+        console.log(newMSG.content);
+        newMSG.image = newMSG.image || null;
         const currentTime = new Date();
         newMSG.createdAt = currentTime.toISOString();
         

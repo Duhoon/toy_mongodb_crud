@@ -4,6 +4,7 @@ const db = require("./index");
 const messageSchema = new mongoose.Schema({
     userId : String,
     content : String,
+    image : String,
     createdAt : Date,
 })
 
