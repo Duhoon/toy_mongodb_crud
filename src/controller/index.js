@@ -1,4 +1,5 @@
 const Message = require("../model/Message");
+const Reply = require("../model/Reply");
 
 module.exports = {
     get : async (req, res)=>{
@@ -27,12 +28,14 @@ module.exports = {
     reply : async (req, res)=>{
         const msgId = req.body.message.msgId;
         delete req.body.message.msgId;
+
         const newReply = req.body.message;
         newReply.image = newReply.image || null;
+
         const currentTime = new Date();
         newReply.createdAt = currentTime.toISOString();
         
-        const reply = new Message(newReply);
+        const reply = new Reply(newReply);
 
         const result = await Message.updateOne({_id:msgId},{$push : {reply}})
 
