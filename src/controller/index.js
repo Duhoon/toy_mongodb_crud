@@ -8,8 +8,9 @@ module.exports = {
 
     send : async (req, res)=>{
         const newMSG = req.body.message;
-        console.log(newMSG.content);
+
         newMSG.image = newMSG.image || null;
+        newMSG.reply = [];
         const currentTime = new Date();
         newMSG.createdAt = currentTime.toISOString();
         
@@ -22,6 +23,22 @@ module.exports = {
 
         return res.status(200).send({msg : result});
     },
+
+    reply : async (req, res)=>{
+        const msgId = req.body.message.msgId;
+        delete req.body.message.msgId;
+        const newReply = req.body.message;
+        newReply.image = newReply.image || null;
+        const currentTime = new Date();
+        newReply.createdAt = currentTime.toISOString();
+        
+        const reply = new Message(newReply);
+
+        const result = await Message.updateOne({_id:msgId},{$push : {reply}})
+
+        return res.status(200).send({msg : result});
+    }
+    ,
 
     update : async (req, res)=>{
         const {messageId, content} = req.body.message;
