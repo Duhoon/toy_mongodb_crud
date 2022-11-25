@@ -5,7 +5,7 @@ const messageSchema = new mongoose.Schema({
     userId : String,
     content : String,
     image : String,
-    reply : Array,
+    replyTo : mongoose.Types.ObjectId,
     createdAt : Date,
 })
 

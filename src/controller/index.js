@@ -3,28 +3,34 @@ const Reply = require("../model/Reply");
 
 module.exports = {
     get : async (req, res)=>{
-        const messages = await Message.find().sort({createdAt:-1}).catch(err=>err);
+        const messages = await Message.find({replyTo:null}).sort({createdAt:-1}).catch(err=>err);
         return res.status(200).send(messages);
     },
 
+    getDetail : async(req, res)=>{
+        const _id = req.params._id;
+        
+        const messages= await Message.find({_id}).catch(err=>err);
+        const reply = await Message.find({replyTo : _id}).sort({createdAt:-1});
+
+        return res.status(200).send(messages.concat(reply));
+    },
+    
+
     send : async (req, res)=>{
         const newMSG = req.body.message;
-
+        
         newMSG.image = newMSG.image || null;
-        newMSG.reply = [];
+        newMSG.replyTo = newMSG.replyTo || null;
         const currentTime = new Date();
         newMSG.createdAt = currentTime.toISOString();
         
-        const result = await Message.create(newMSG, (err, result)=>{
-            console.log(err);
-            console.log(result);
-            if(err) return err;
-            else return result;
-        })
+        const result = await Message.create(newMSG).catch(err=>err);
 
-        return res.status(200).send({msg : result});
+        return res.status(200).send(result);
     },
-
+    
+    // deprecated
     reply : async (req, res)=>{
         const msgId = req.body.message.msgId;
         delete req.body.message.msgId;

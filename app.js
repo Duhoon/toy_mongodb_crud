@@ -2,7 +2,7 @@ const express = require("express");
 const app = express();
 const logs = require("morgan");
 const cors = require("cors");
-const {get, send, reply, update, remove} = require("./src/controller");
+const {get, getDetail, send, reply, update, remove} = require("./src/controller");
 
 const PORT = process.env.PORT || 4000;
 
@@ -16,6 +16,8 @@ app.use(express.urlencoded({extended:false}));
 app.use(logs(":method :url :data :response-time ms"));
 
 app.get("/", get);
+
+app.get("/detail/:_id", getDetail);
 
 app.post("/send", send);
 
