@@ -30,22 +30,20 @@ module.exports = {
         return res.status(200).send(result);
     },
     
-    // deprecated
     reply : async (req, res)=>{
-        const msgId = req.body.message.msgId;
-        delete req.body.message.msgId;
-
         const newReply = req.body.message;
         newReply.image = newReply.image || null;
 
         const currentTime = new Date();
         newReply.createdAt = currentTime.toISOString();
         
-        const reply = new Reply(newReply);
+        const result = await Message.create(newReply)
+        const incNumReplies = await Message.updateOne(
+            {_id:newReply.replyTo}, 
+            {$inc:{"numReplies": 1}}
+        )
 
-        const result = await Message.updateOne({_id:msgId},{$push : {reply}})
-
-        return res.status(200).send({msg : result});
+        return res.status(200).send({msg : {result, incNumReplies}});
     }
     ,
 
@@ -59,10 +57,30 @@ module.exports = {
 
     remove : async (req, res)=>{
         const messageId = req.body.message.messageId;
+        
+        const {replyTo} = await Message.findOne({_id:messageId}, {"replyTo":1})
+        
+        // 댓글 수 감소
+        const decNumReplies = "";
+        if (replyTo !== null){
+            const decNumReplies = await Message.updateOne(
+                {_id:replyTo},
+                {$inc:{"numReplies":-1}}
+            )            
+        }
+
+        // 메시지 제거
         const result = await Message.deleteOne({_id:messageId}).catch(err=>err);
-        if (result){
+        if (result.ok === 1){
             return res.status(200).send({msg : "Remove Message Success"});
         } else return res.status(400).send({msg : "Invalid Input"});
+    },
 
+    test : async (req, res)=>{
+        const messageId = req.body.message.messageId;
+        
+        const {replyTo} = await Message.findOne({_id:messageId}, {"replyTo":1})
+
+        return res.status(200).send({replyTo});
     }
 }

@@ -2,7 +2,7 @@ const express = require("express");
 const app = express();
 const logs = require("morgan");
 const cors = require("cors");
-const {get, getDetail, send, reply, update, remove} = require("./src/controller");
+const {get, getDetail, send, reply, update, remove, test} = require("./src/controller");
 
 const PORT = process.env.PORT || 4000;
 
@@ -26,6 +26,8 @@ app.post("/reply", reply);
 app.post("/update", update);
 
 app.post("/remove", remove);
+
+app.post("/test", test);
 
 app.listen(PORT, ()=>{console.log(`Sever is Running ${PORT}`)})
 

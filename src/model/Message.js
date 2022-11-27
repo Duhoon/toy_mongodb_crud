@@ -6,6 +6,7 @@ const messageSchema = new mongoose.Schema({
     content : String,
     image : String,
     replyTo : mongoose.Types.ObjectId,
+    numReplies : {type:Number, default : 0},
     createdAt : Date,
 })
 
