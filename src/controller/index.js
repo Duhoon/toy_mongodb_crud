@@ -3,17 +3,22 @@ const Reply = require("../model/Reply");
 
 module.exports = {
     get : async (req, res)=>{
-        const messages = await Message.find({replyTo:null}).sort({createdAt:-1}).catch(err=>err);
+        const skip = req.query.skip;
+        const limit = req.query.limit;
+
+        const messages = await Message.find({replyTo:null})
+        .skip(skip).limit(limit).sort({createdAt:-1})
+        .catch(err=>err);
+
         return res.status(200).send(messages);
     },
 
     getDetail : async(req, res)=>{
         const _id = req.params._id;
         
-        const messages= await Message.find({_id}).catch(err=>err);
-        const reply = await Message.find({replyTo : _id}).sort({createdAt:-1});
+        const messages= await Message.find({$or:[{_id},{replyTo:_id}]}).catch(err=>err);
 
-        return res.status(200).send(messages.concat(reply));
+        return res.status(200).send(messages);
     },
     
 
