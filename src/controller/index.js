@@ -1,5 +1,9 @@
 const Message = require("../model/Message");
-const Reply = require("../model/Reply");
+
+const refinePath = (path)=>{
+    path = path.replace("public", "");
+    return path;
+}
 
 module.exports = {
     get : async (req, res)=>{
@@ -19,6 +23,15 @@ module.exports = {
         const messages= await Message.find({$or:[{_id},{replyTo:_id}]}).catch(err=>err);
 
         return res.status(200).send(messages);
+    },
+
+    uploadImage : async(req, res, next)=>{
+        const filename = req.file.filename;
+        const path = refinePath(req.file.path);
+
+        console.log(filename)
+        console.log(path)
+        return res.status(200).send({filename, path});
     },
     
 
